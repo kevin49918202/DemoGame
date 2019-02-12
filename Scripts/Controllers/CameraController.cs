@@ -72,7 +72,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        if ((Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0)) && IsMouseOverUIWithIgnores())
+        if ((Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0)) && !EventSystem.current.IsPointerOverGameObject())
         {
             inputLock = true;
         }
@@ -143,22 +143,22 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    bool IsMouseOverUIWithIgnores()
-    {
-        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-        pointerEventData.position = Input.mousePosition;
+    //bool IsMouseOverUIWithIgnores()
+    //{
+    //    PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+    //    pointerEventData.position = Input.mousePosition;
 
-        List<RaycastResult> raycastResultList = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
+    //    List<RaycastResult> raycastResultList = new List<RaycastResult>();
+    //    EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
 
-        for (int i = 0; i < raycastResultList.Count; i++)
-        {
-            if (raycastResultList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
-            {
-                raycastResultList.RemoveAt(i);
-                i--;
-            }
-        }
-        return raycastResultList.Count > 0;
-    }
+    //    for (int i = 0; i < raycastResultList.Count; i++)
+    //    {
+    //        if (raycastResultList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
+    //        {
+    //            raycastResultList.RemoveAt(i);
+    //            i--;
+    //        }
+    //    }
+    //    return raycastResultList.Count > 0;
+    //}
 }
