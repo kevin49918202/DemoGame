@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Interactable focus;
+    GameObject focus;
 
     Camera cam;
 
@@ -22,13 +22,7 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 100))
             {
-                Interactable interactable = hit.collider.GetComponent<Interactable>();
-                if (interactable != null)
-                {
-                    CharacterStats characterStats = hit.collider.GetComponent<CharacterStats>();    
-                    SetFocus(interactable, characterStats);
-                    focus.Interact();
-                }
+                SetFocus(hit.collider.gameObject);
             }
         }
 
@@ -38,45 +32,55 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void SetFocus(Interactable newFocus, CharacterStats newFocusStats)
+    void SetFocus(GameObject newFocus)
     {
-        if(newFocus != focus)
+        Interactable newInteractable = newFocus.GetComponent<Interactable>();
+        if (newInteractable != null)
         {
-            if (focus != null)
-                focus.OnDefocused();
-            focus = newFocus;
+            
+            if (newFocus != focus)
+            {
+                if (focus != null)
+                {
+                    Interactable oldInteractable = focus.GetComponent<Interactable>();
+                    oldInteractable.OnDefocused();
+                }
+                focus = newFocus;
+            }
+            AvatarManager.instance.Target(newFocus);
+            newInteractable.OnFocused(transform);
+            newInteractable.Interact();
         }
-        TargetAvatar.instance.Target(newFocusStats);
-        newFocus.OnFocused(transform);
+
     }
 
     void RemoveFocus()
     {
         if(focus != null)
         {
-            focus.OnDefocused();
-            TargetAvatar.instance.UnTarget();
+            Interactable oldInteractable = focus.GetComponent<Interactable>();
+            oldInteractable.OnDefocused();
+            AvatarManager.instance.UnTarget(focus);
         }
-            
         focus = null;
     }
 
-    bool IsMouseOverUIWithIgnores()
-    {
-        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-        pointerEventData.position = Input.mousePosition;
+    //bool IsMouseOverUIWithIgnores()
+    //{
+    //    PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+    //    pointerEventData.position = Input.mousePosition;
 
-        List<RaycastResult> raycastResultList = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
+    //    List<RaycastResult> raycastResultList = new List<RaycastResult>();
+    //    EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
 
-        for (int i = 0; i < raycastResultList.Count; i++)
-        {
-            if (raycastResultList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
-            {
-                raycastResultList.RemoveAt(i);
-                i--;
-            }
-        }
-        return raycastResultList.Count > 0;
-    }
+    //    for (int i = 0; i < raycastResultList.Count; i++)
+    //    {
+    //        if (raycastResultList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
+    //        {
+    //            raycastResultList.RemoveAt(i);
+    //            i--;
+    //        }
+    //    }
+    //    return raycastResultList.Count > 0;
+    //}
 }

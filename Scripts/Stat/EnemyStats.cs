@@ -18,6 +18,6 @@ public class EnemyStats : CharacterStats {
 
     public void ResetStats()
     {
-        currentHealth = maxHealth;
+        m_currentHealth = m_maxHealth;
     }
 }

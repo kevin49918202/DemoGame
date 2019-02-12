@@ -12,8 +12,7 @@ public class PlayerMotor : MonoBehaviour {
     }
 
     public Transform cam;
-    PlayerAnimator playerAnimator;
-    
+    public Animator animator;
     CharacterController controller;
 
     public bool inputLock = false;
@@ -26,21 +25,18 @@ public class PlayerMotor : MonoBehaviour {
     [SerializeField]
     float m_fVelocityDead = 0.2f;
     float m_fNormalize;
-    float m_fMoveVertical, m_fMoveHorizontal, m_fJumpVertical, m_fJumpHorizontal, m_fVertical, m_fHorizontal;
+    float vertical, horizontal, lastVertical, lastHorizontal;
     float angle;
     float followAngle;
-    float tmpAngle;
     float lastAngle;
     public float height;
 
-    int animAngle;
-    float animAngleDead = 0.5f;
-    bool isGround = true;
+    bool isJump = false;
     bool isMove = true;
     bool followCam = false;
 
     Vector3 movePoint;
-    public Vector3 targetPoint;
+    public Vector3 currentVelocity;
 
     float angleSmoothTime = 0.08f;
     float angleSmoothTime_Back = 0.4f;
@@ -51,70 +47,62 @@ public class PlayerMotor : MonoBehaviour {
 
     void Start () {
         controller = GetComponent<CharacterController>();
-        playerAnimator = GetComponent<PlayerAnimator>();
-    }
+	}
 	
 	void Update ()
     {
-        m_fVertical = Input.GetAxis("Vertical");
-        m_fHorizontal = Input.GetAxis("Horizontal");
         if (!inputLock)
         {
-            m_fMoveVertical = m_fVertical;
-            m_fMoveHorizontal = m_fHorizontal;
+            vertical = Input.GetAxis("Vertical");
+            horizontal = Input.GetAxis("Horizontal");
             HandleAngle();
         }
         HandleMove();
+
         SetAnim();
     }
 
     void HandleAngle()
     {
+        if (isJump) return;
+
+        if (Input.GetMouseButtonDown(0))
+            lastAngle = followAngle;
+ 
         if (Input.GetMouseButton(0))
-        {
-            tmpAngle = lastAngle;
             followCam = false;
-        }
         else if (Input.GetMouseButton(1) || movePoint.magnitude != 0 )
             followCam = true;
 
         
-        followAngle = followCam? cam.eulerAngles.y : tmpAngle;
-
-        currentAngleSmoothTime = (m_fMoveVertical != 0 || m_fMoveHorizontal != 0)? angleSmoothTime : angleSmoothTime_Back;
+        followAngle = followCam? (cam.eulerAngles.y + angle) : (lastAngle + angle);
+        
+        currentAngleSmoothTime = (vertical != 0 || horizontal != 0)? angleSmoothTime : angleSmoothTime_Back;
         currentAngle = Mathf.SmoothDampAngle(currentAngle, followAngle, ref angleSmoothVelocity, currentAngleSmoothTime) ;
         transform.eulerAngles = new Vector3(0, currentAngle, 0);
-
-        if (currentAngle - lastAngle > animAngleDead)
-            animAngle = 1;
-        else if (currentAngle - lastAngle < -animAngleDead)
-            animAngle = -1;
-        else
-            animAngle = 0;
-        lastAngle = currentAngle;
     }
 
     void HandleMove()
     {
         HandleHeight();
 
-        m_fNormalize = MoveNormalize(m_fMoveVertical, m_fMoveHorizontal);
+        m_fNormalize = MoveNormalize(vertical, horizontal);
 
         if (m_fNormalize > m_fVelocityDead)
         {
-            if (isGround)
-                movePoint = (m_fMoveVertical * transform.forward + m_fMoveHorizontal * transform.right) * (m_fMoveVertical < 0 ? backSpeed : speed) / m_fNormalize;
+            if (!isJump)
+                movePoint = (vertical * transform.forward + horizontal * transform.right) * (vertical < 0 ? backSpeed : speed) / m_fNormalize;
             isMove = true;
         }
         else
         {
-            if(isGround)
+            if(!isJump)
                 movePoint = Vector3.zero;
             isMove = false;
         }
 
-        targetPoint = (movePoint + new Vector3(0, height, 0)) * Time.deltaTime;
-        controller.Move(targetPoint);
+        currentVelocity = (movePoint + new Vector3(0, height, 0)) * Time.deltaTime;
+        controller.Move(currentVelocity);
     }
 
     float MoveNormalize(float vertical, float horizontal)
@@ -127,37 +115,37 @@ public class PlayerMotor : MonoBehaviour {
         if (controller.isGrounded)
         {
             height = -gravity;
-            isGround = true;
+            //isGround = true;
+            isJump = false;
         }
         else
         {
             height -= jumpGravity;
-            isGround = false;
+            //isGround = false;
         }        
 
-        if (isGround && Input.GetKeyDown(KeyCode.Space))
+        if (!isJump && Input.GetKeyDown(KeyCode.Space))
         {
             height = jumpSpeed;
-            isGround = false;
-
-            playerAnimator.bJump = true;
-
-            m_fJumpVertical = m_fMoveVertical;
-            m_fJumpHorizontal = m_fMoveHorizontal;
+            isJump = true;
+            lastVertical = vertical;
+            lastHorizontal = horizontal;
         }
     }
 
     void SetAnim()
     {
-        playerAnimator.bMove = isMove;
-        playerAnimator.bGround = isGround;
-        playerAnimator.fJumpVertical = m_fJumpVertical;
-        playerAnimator.fJumpHorizontal = m_fJumpHorizontal;
-        playerAnimator.iAnimAngle = animAngle;
-        playerAnimator.fVertical = m_fVertical;
-        playerAnimator.fHorizontal = m_fHorizontal;
-        playerAnimator.fMoveVertical = m_fMoveVertical;
-        playerAnimator.fMoveHorizontal = m_fMoveHorizontal;
+        animator.SetBool("Move", isMove);
+        animator.SetBool("Jump", isJump);
+        
+        animator.SetFloat("LastVertical", lastVertical);
+        animator.SetFloat("LastHorizontal", lastHorizontal);
+
+        if (!isJump)
+        {
+            animator.SetFloat("Vertical", vertical);
+            animator.SetFloat("Horizontal", horizontal);
+        }
     }
 
     public int GetAnimParameters()
@@ -167,7 +155,7 @@ public class PlayerMotor : MonoBehaviour {
         if (isMove)
             animInfo |= 0x0004;
 
-        if (isGround)
+        if (isJump)
             animInfo |= 0x0008;
 
         return animInfo;

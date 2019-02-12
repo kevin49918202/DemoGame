@@ -13,7 +13,7 @@ public class FloatingTextController : MonoBehaviour {
     void Awake()
     {
         instance = this;
-        canvas = GameObject.Find("Canvas").transform;
+        canvas = GameObject.Find("CanvasWithIgnores").transform;
 
         popupText_Player = Resources.Load<FloatingText>("PopupTextParent_Player");
         popupText_Enemy = Resources.Load<FloatingText>("PopupTextParent_Enemy");

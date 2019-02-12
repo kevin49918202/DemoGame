@@ -74,7 +74,7 @@ public class enemyObjectManage : MonoBehaviour {
 
         yield return new WaitForSeconds(disappearTime);
         ObjectPool.m_Instance.UnLoadObjectToPool(kind, go);
-        TargetAvatar.instance.UnTarget();
+        AvatarManager.instance.UnTarget(go);
 
         yield return new WaitForSeconds(respawnTime);
         EnemyRespawn(sp);
