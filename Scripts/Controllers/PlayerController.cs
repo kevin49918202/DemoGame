@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(0) && !IsMouseOverUIWithIgnores())
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -61,22 +61,22 @@ public class PlayerController : MonoBehaviour
         focus = null;
     }
 
-    //bool IsMouseOverUIWithIgnores()
-    //{
-    //    PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-    //    pointerEventData.position = Input.mousePosition;
+    bool IsMouseOverUIWithIgnores()
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = Input.mousePosition;
 
-    //    List<RaycastResult> raycastResultList = new List<RaycastResult>();
-    //    EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
+        List<RaycastResult> raycastResultList = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
 
-    //    for (int i = 0; i < raycastResultList.Count; i++)
-    //    {
-    //        if (raycastResultList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
-    //        {
-    //            raycastResultList.RemoveAt(i);
-    //            i--;
-    //        }
-    //    }
-    //    return raycastResultList.Count > 0;
-    //}
+        for (int i = 0; i < raycastResultList.Count; i++)
+        {
+            if (raycastResultList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
+            {
+                raycastResultList.RemoveAt(i);
+                i--;
+            }
+        }
+        return raycastResultList.Count > 0;
+    }
 }
