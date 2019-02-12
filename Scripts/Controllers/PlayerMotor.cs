@@ -40,7 +40,7 @@ public class PlayerMotor : MonoBehaviour {
     bool followCam = false;
 
     Vector3 movePoint;
-    public Vector3 targetPoint;
+    public Vector3 currentVelocity;
 
     float angleSmoothTime = 0.08f;
     float angleSmoothTime_Back = 0.4f;
@@ -113,8 +113,8 @@ public class PlayerMotor : MonoBehaviour {
             isMove = false;
         }
 
-        targetPoint = (movePoint + new Vector3(0, height, 0)) * Time.deltaTime;
-        controller.Move(targetPoint);
+        currentVelocity = (movePoint + new Vector3(0, height, 0)) * Time.deltaTime;
+        controller.Move(currentVelocity);
     }
 
     float MoveNormalize(float vertical, float horizontal)
