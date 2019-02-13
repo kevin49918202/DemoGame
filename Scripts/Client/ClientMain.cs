@@ -53,7 +53,7 @@ public class ClientMain : MonoBehaviour{
 
     void SendMovementMessage()
     {
-        sVelocity = playerMotor.currentVelocity;
+        sVelocity = playerMotor.targetPoint;
         sPosition = player.transform.position;
         sEularAngle = player.transform.eulerAngles.y;
         sAnimInfo = playerMotor.GetAnimParameters();

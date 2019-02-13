@@ -5,16 +5,14 @@ using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour {
 
-    public Transform player;
-
     //物件Layer屬性(通常設成Ground/地板)
     [Header("碰撞判定對象 :")]
     public LayerMask collideMask;
 
     [SerializeField]
-    Transform tCameraCollider;
+    Transform cameraCollider;
     [SerializeField]
-    Transform tTarget;
+    Transform target;
 
     
 
@@ -103,7 +101,7 @@ public class CameraController : MonoBehaviour {
         //判定是否碰撞中決定採用zoom值還是collidezoom值
         currentZoom = Mathf.SmoothDamp(currentZoom, hasCollide ? collideZoom : zoom, ref zoomSmoothVelocity, zoomSmoothTime);
         //處理位置
-        currentPosition = Vector3.SmoothDamp(currentPosition, tTarget.position, ref positionSmoothVelocity, positionSmoothTime);
+        currentPosition = Vector3.SmoothDamp(currentPosition, target.position, ref positionSmoothVelocity, positionSmoothTime);
         //本物件(相機)位置 = 跟隨目標位置 - "相機面對方向"前方1單位向量 * 距離 (後方的意思)
         transform.position = currentPosition - transform.forward * currentZoom;
     }
@@ -113,12 +111,12 @@ public class CameraController : MonoBehaviour {
     {
         RaycastHit hit;
         //判定相機有無碰撞地形 => Physics.Linecast(開始位置, 結束位置, 結果放到hit, 只判斷此Layer)
-        if (Physics.Linecast(tTarget.position, tCameraCollider.position, out hit, collideMask))
+        if (Physics.Linecast(target.position, cameraCollider.position, out hit, collideMask))
         {
             hasCollide = true;
 
             //碰撞距離 = 跟隨目標 至 碰撞點  
-            float distance = Vector3.Distance(tTarget.position, hit.point); //兩點直線距離
+            float distance = Vector3.Distance(target.position, hit.point); //兩點直線距離
             collideZoom = Mathf.Clamp(distance, minMaxZoom.x, minMaxZoom.y);
 
             //如果使用者縮放讓zoom小於當前碰撞距離 => 離開碰撞狀態

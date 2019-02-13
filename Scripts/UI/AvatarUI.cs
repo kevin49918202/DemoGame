@@ -4,19 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class CharacterAvatar : MonoBehaviour {
+public class AvatarUI : MonoBehaviour {
 
-    public GameObject targetAvatar;
+    [SerializeField]GameObject targetAvatar;
     CharacterStats m_targetStats;
     public CharacterStats targetStats { get { return m_targetStats; } }
 
-    public TextMeshProUGUI text_HP;
-    public Image image_HP;
-    protected float m_MaxHp;
-    protected float m_CurrentHP;
+    [SerializeField]TextMeshProUGUI text_HP;
+    [SerializeField]Image image_HP;
+    float m_maxHp;
+    float m_currentHP;
 
-    public TextMeshProUGUI text_PB;
-    public Image image_PB;
+    [SerializeField] TextMeshProUGUI text_PB;
+    [SerializeField] Image image_PB;
     float m_maxMp;
     float m_currentMp;
 
@@ -24,13 +24,13 @@ public class CharacterAvatar : MonoBehaviour {
 
     public void OnUpdate()
     {
-        m_MaxHp = m_targetStats.maxHealth;
-        m_CurrentHP = m_targetStats.currentHealth;
+        m_maxHp = m_targetStats.maxHealth;
+        m_currentHP = m_targetStats.currentHealth;
         m_maxMp = m_targetStats.maxMana;
         m_currentMp = m_targetStats.currentMana;
 
-        image_HP.fillAmount = m_CurrentHP / m_MaxHp;
-        text_HP.text = (int)(m_CurrentHP / m_MaxHp * 100) + "%";
+        image_HP.fillAmount = m_currentHP / m_maxHp;
+        text_HP.text = (int)(m_currentHP / m_maxHp * 100) + "%";
 
         image_PB.fillAmount = m_currentMp / m_maxMp;
         text_PB.text = (int)(m_currentMp / m_maxMp * 100) + "%";

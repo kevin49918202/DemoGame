@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OtherPlayerMotor : MonoBehaviour {
 
-    CharacterController controller;
+    //CharacterController controller;
     Animator animator;
 
     Vector3 currentVelocity;
@@ -18,7 +18,7 @@ public class OtherPlayerMotor : MonoBehaviour {
     public float angleSmoothTime = 0.1f;
 
     void Start () {
-        controller = GetComponent<CharacterController>();
+        //controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 	}
 

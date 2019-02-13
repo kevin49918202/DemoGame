@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerStats : CharacterStats {
 
     void Start () {
-        EquipmentManager.instance.onEquipmentChanged += OnEquipmentChanged;
+        //EquipmentManager.instance.onEquipmentChanged += OnEquipmentChanged;
 	}
 
     void OnEquipmentChanged(Equipment newItem, Equipment oldItem)

@@ -8,13 +8,13 @@ public class AvatarManager : MonoBehaviour
     public static AvatarManager instance { get { return m_Instance; } }
     static AvatarManager m_Instance;
 
-    [SerializeField] CharacterAvatar playerAvatar;
-    [SerializeField] CharacterAvatar targetAvatar;
-    CharacterAvatar[] characterAvatars;
+    [SerializeField] AvatarUI playerAvatar;
+    [SerializeField] AvatarUI targetAvatar;
+    AvatarUI[] characterAvatars;
     void Awake()
     {
         m_Instance = this;
-        characterAvatars = new CharacterAvatar[] { playerAvatar , targetAvatar };
+        characterAvatars = new AvatarUI[] { playerAvatar , targetAvatar };
     }
     void Start()
     {
@@ -24,7 +24,7 @@ public class AvatarManager : MonoBehaviour
 
     public void UpdateAvatar(CharacterStats stats)
     {
-        foreach(CharacterAvatar a in characterAvatars)
+        foreach(AvatarUI a in characterAvatars)
         {
             if(stats == a.targetStats)
             {
